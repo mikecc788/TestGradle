@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'gs_form/core/form_style.dart';
+import 'gs_form/enums/field_status.dart';
+import 'gs_form/model/data_model/date_data_model.dart';
+import 'gs_form/model/data_model/radio_data_model.dart';
+import 'gs_form/model/data_model/spinner_data_model.dart';
+import 'gs_form/widget/field.dart';
+import 'gs_form/widget/form.dart';
+import 'gs_form/widget/section.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -13,21 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
+
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -39,15 +34,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -55,71 +41,360 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  late GSForm form;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    return SafeArea(child: Scaffold(
+      appBar: AppBar(
+        title: const Text('GSForm example'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 0.0),
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil<dynamic>(
+                    context,
+                    MaterialPageRoute<dynamic>(builder: (BuildContext context) => MultiSectionForm()),
+                        (route) => true, //if you want to disable back feature set to false
+                  );
+                },
+                child: const Text('Multi Section form'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil<dynamic>(
+                      context,
+                      MaterialPageRoute<dynamic>(builder: (BuildContext context) => SingleSectionForm()),
+                          (route) => true);
+                },
+                child: const Text('Single Section form'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+    );
+  }
+}
+
+
+// ignore: must_be_immutable
+class SingleSectionForm extends StatefulWidget {
+  SingleSectionForm({Key? key}) : super(key: key);
+  String? value;
+
+  late GSFieldStatusEnum status;
+
+  @override
+  State<SingleSectionForm> createState() => _SingleSectionFormState();
+}
+
+class _SingleSectionFormState extends State<SingleSectionForm> {
+  late GSForm form;
+  int id = 0;
+
+  @override
+  void initState() {
+    widget.value = 'dfhbdkfhbdasffffteryuiei577y ';
+    widget.status = GSFieldStatusEnum.normal;
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Single section Page'),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.all(0.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: form = GSForm.singleSection(
+                      style: GSFormStyle(titleStyle: const TextStyle(color: Colors.black87, fontSize: 16.0)),
+                      context,
+                      fields: [
+                        GSField.email(
+                          tag: 'email',
+                          title: 'login',
+                          weight: 12,
+                          required: true,
+                          maxLength: 100,
+                          errorMessage: 'erro',
+                          value: 'dastras.saeed@gmail.com',
+                        ),
+                        GSField.spinner(
+                          tag: 'customer_type',
+                          required: false,
+                          weight: 12,
+                          showTitle: false,
+                          onChange: (model) {
+                            id = model!.id;
+                            setState(() {});
+                          },
+                          items: [
+                            SpinnerDataModel(
+                              name: 'm1',
+                              id: 0,
+                            ),
+                            SpinnerDataModel(
+                              name: 'm2',
+                              id: 1,
+                            ),
+                            SpinnerDataModel(
+                              name: 'm3',
+                              id: 2,
+                            ),
+                          ],
+                        ),
+                        GSField.spinner(
+                          tag: 'customer_type',
+                          required: false,
+                          weight: 6,
+                          title: 'Gender',
+                          onChange: (model) {},
+                          items: [
+                            SpinnerDataModel(name: '3', id: 0, isSelected: id == 0),
+                            SpinnerDataModel(
+                              name: '4',
+                              id: 1,
+                              isSelected: id == 1,
+                            ),
+                            SpinnerDataModel(name: '8', id: 2, isSelected: id == 2),
+                          ],
+                        ),
+                      ]),
+                ),
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        bool isValid = form.isValid();
+                        Map<String, dynamic> map = form.onSubmit();
+                        debugPrint(map.toString());
+                        debugPrint(isValid.toString());
+                        setState(() {});
+                      },
+                      child: const Text('Submit'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class MultiSectionForm extends StatelessWidget {
+  MultiSectionForm({Key? key}) : super(key: key);
+
+  late GSForm form;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Multi section screen'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 12.0, right: 12, top: 24),
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: form = GSForm.multiSection(context, sections: [
+                  GSSection(sectionTitle: 'User information', fields: [
+                    GSField.text(
+                      value: 'Some text',
+                      tag: 'name',
+                      title: 'Name',
+                      minLine: 1,
+                      maxLine: 1,
+                    ),
+                    GSField.text(
+                      value: 'Some text',
+                      tag: 'name',
+                      title: 'Name',
+                      minLine: 1,
+                      maxLine: 1,
+                    ),
+                    GSField.radioGroup(
+                      hint: 'Radio Group',
+                      tag: 'radio',
+                      showScrollBar: true,
+                      scrollBarColor: Colors.red,
+                      scrollDirection: Axis.horizontal,
+                      height: 50,
+                      scrollable: true,
+                      required: true,
+                      weight: 12,
+                      title: 'Size number',
+                      searchable: false,
+                      searchHint: 'Search...',
+                      searchIcon: const Icon(Icons.search),
+                      searchBoxDecoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.blue,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      items: [
+                        RadioDataModel(title: 'lorem', isSelected: false),
+                        RadioDataModel(title: 'ipsum', isSelected: false),
+                      ],
+                      callBack: (data) {},
+                    ),
+                    GSField.datePicker(
+                      calendarType: GSCalendarType.gregorian,
+                      tag: 'licenceExpireDate',
+                      title: 'DatePicker',
+                      weight: 12,
+                      required: false,
+                      initialDate: GSDate(day: 10, month: 5, year: 2023),
+                      errorMessage: 'please enter a name',
+                    ),
+                    GSField.text(
+                      value: 'سعید دسترس3',
+                      tag: 'lastName',
+                      title: 'Last name',
+                      minLine: 1,
+                      maxLine: 1,
+                      weight: 12,
+                      required: true,
+                    ),
+                    GSField.spinner(
+                      tag: 'customer_type',
+                      required: false,
+                      weight: 6,
+                      title: 'Gender',
+                      value: SpinnerDataModel(
+                        name: 'woman',
+                        id: 2,
+                      ),
+                      onChange: (model) {},
+                      items: [
+                        SpinnerDataModel(
+                          name: 'man',
+                          id: 1,
+                        ),
+                        SpinnerDataModel(
+                          name: 'woman',
+                          id: 2,
+                        ),
+                        SpinnerDataModel(
+                          name: 'woman',
+                          id: 2,
+                        ),
+                      ],
+                    ),
+                    GSField.mobile(
+                      tag: 'mobile',
+                      title: 'Phone number',
+                      maxLength: 11,
+                      helpMessage: '9357814747',
+                      weight: 6,
+                      required: false,
+                      errorMessage: 'some error',
+                    ),
+                  ]),
+                  GSSection(
+                    sectionTitle: 'Market information',
+                    fields: [
+                      GSField.text(
+                        tag: 'name',
+                        title: 'Market name',
+                        minLine: 1,
+                        maxLine: 1,
+                        weight: 12,
+                        required: false,
+                        errorMessage: 'please enter a name',
+                      ),
+                      GSField.textPlain(
+                        hint: 'sds',
+                        tag: 'lastName',
+                        title: 'Market address',
+                        maxLine: 4,
+                        maxLength: 233,
+                        showCounter: false,
+                        weight: 12,
+                        prefixWidget: const Icon(Icons.location_city, color: Colors.blue),
+                        required: true,
+                      ),
+                      GSField.spinner(
+                        tag: 'customer_type',
+                        required: false,
+                        weight: 6,
+                        title: 'Market type',
+                        items: [
+                          SpinnerDataModel(
+                            name: 'Super market',
+                            id: 1,
+                          ),
+                          SpinnerDataModel(
+                            name: 'woman',
+                            id: 2,
+                          ),
+                        ],
+                      ),
+                      GSField.mobile(
+                        tag: 'mobile',
+                        title: 'Telephone',
+                        maxLength: 11,
+                        helpMessage: '9357814747',
+                        weight: 6,
+                        required: false,
+                        errorMessage: 'some error',
+                      ),
+                    ],
+                  ),
+                ]),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        bool isValid = form.isValid();
+                        Map<String, dynamic> map = form.onSubmit();
+                        debugPrint(isValid.toString());
+                        debugPrint(map.toString());
+                      },
+                      child: const Text('Submit'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
